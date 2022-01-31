@@ -8,17 +8,31 @@ import (
 func main() {
 	var choice int
 	var userName, password string
+	authentication.ReadData()
 	for {
-		fmt.Println("Welcome!1-->Register New User,2-->Login,3-->Exit App \nEnter your Choice:")
+		fmt.Println("Welcome!1-->Register New User,2-->Login,3-->List Users,4-->Exit App \nEnter your Choice:")
 		fmt.Scanln(&choice)
 
 		switch choice {
 		case 1:
 			fmt.Println("Enter username")
 			fmt.Scanln(&userName)
+			err := authentication.CheckIfUserExists(userName)
+			if err != nil {
+				fmt.Println(err)
+				break
+			}
+		begin:
 			fmt.Println("Enter password")
 			fmt.Scanln(&password)
-			authentication.CreateUser(userName, password)
+			i := len(password)
+			if i == 8 {
+				authentication.CreateUser(userName, password)
+				break
+			}
+			fmt.Println("Password should be of length 8")
+			goto begin
+
 		case 2:
 			status := authentication.LoginUser()
 			if status == "Login Successfull" {
@@ -27,9 +41,12 @@ func main() {
 			} else {
 				fmt.Println(status)
 			}
+		case 3:
+			authentication.ListAllUsers()
 
 		}
-		if choice == 3 {
+		if choice == 4 {
+			authentication.WriteData()
 			break
 		}
 	}
